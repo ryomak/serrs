@@ -1,0 +1,2 @@
+# serrs
+simple application errors
