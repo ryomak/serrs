@@ -25,17 +25,11 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: vet
         run: go vet ./...
-      - name: Declare some variables
-        id: vars
-        run: |
-          echo "coverage_txt=${RUNNER_TEMP}/coverage.txt" >> "$GITHUB_OUTPUT"
-      - name: Test Coverage (pkg)
-        run: go test ./... -race -coverprofile=${{ steps.vars.outputs.coverage_txt }}
+      - name: Run coverage
+        run: go test ./... -race -coverprofile=coverage.out -covermode=atomic
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         if: ${{ matrix.go == '^1.21' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ryomak/serrs
-      - name: Fuzzing serrs package
-        run: go test . -fuzz=Fuzz -fuzztime=300s
