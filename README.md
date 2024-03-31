@@ -22,8 +22,13 @@ go get -u github.com/ryomak/serrs
 # Usage
 ## Create an error
 ```go
+var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
+```
 
-var HogeError = serrs.New(serrs.Unexpceted,"unexpected error")
+or 
+
+```go
+var InvalidParameterError = serrs.New(serrs.StringCode("invalid_parameter"),"invalid parameter error")
 ```
 
 ## Wrap an error and add a stack trace
@@ -48,10 +53,22 @@ fmt.Printf("%+v",err)
 ```
 
 ### Parameters
-WithXXX functions can be used to add additional information to the error.
+`WithXXX` functions can be used to add additional information to the error.
 - code: error code
 - message: err text
-- data: custom data 
+- data: custom data
+
+**data**  
+data is a custom data that can be added to the error. The data is output to the log.  
+If the type satisfies the CustomData interface, any type can be added.
+
+```go
+if err := DoSomething(); err != nil {
+    return serrs.Wrap(err, serrs.WithData(serrs.DefaultCustomData{
+        "key": "value",
+    }))
+}
+```
 
 ## Send Sentry
 serrs supports sending errors to Sentry.
@@ -89,5 +106,14 @@ func main() {
         event := serrs.GenerateSentryEvent(err)
         sentry.CaptureEvent(event)
     }
+}
+```
+
+## check error match
+```go
+var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
+
+if serrs.Is(HogeError) {
+    
 }
 ```

@@ -19,7 +19,7 @@ func TestStackedErrorJson(t *testing.T) {
 			in: serrs.Wrap(
 				serrs.New(serrs.StringCodeUnexpected, "unexpected error"),
 				serrs.WithMessage("wrap error"),
-				serrs.WithCustomData(serrs.DefaultCustomData{"key1": "value1"}),
+				serrs.WithData(serrs.DefaultCustomData{"key1": "value1"}),
 			),
 			want: `[{"message":"unexpected error","data":null},{"message":"wrap error","data":{"key1":"value1"}}]`,
 		},

@@ -1,6 +1,7 @@
 package serrs_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/ryomak/serrs"
@@ -82,6 +83,16 @@ func TestSimpleError_Is(t *testing.T) {
 			target: serrs.New(serrs.StringCode("fuga_error"), "fuga error"),
 			want:   true,
 		},
+		"normal error": {
+			err:    errors.ErrUnsupported,
+			target: errors.ErrUnsupported,
+			want:   true,
+		},
+		"wrap normal error": {
+			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
+			target: errors.ErrUnsupported,
+			want:   true,
+		},
 	}
 
 	for name, tt := range tests {
@@ -147,7 +158,7 @@ func TestWrap_WithCustomData(t *testing.T) {
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			checkEqual(t, serrs.GetCustomData(serrs.Wrap(tt.in, serrs.WithCustomData(tt.data))), tt.want)
+			checkEqual(t, serrs.GetCustomData(serrs.Wrap(tt.in, serrs.WithData(tt.data))), tt.want)
 		})
 	}
 }
@@ -155,13 +166,13 @@ func TestWrap_WithCustomData(t *testing.T) {
 func TestGetCustomData_Example(t *testing.T) {
 	var in error
 	if err := func() error {
-		return serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCustomData(serrs.DefaultCustomData{
+		return serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithData(serrs.DefaultCustomData{
 			"key": "value",
 		}))
 	}(); err != nil {
 		in = serrs.Wrap(
 			err,
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"key2": "value2",
 			}),
 		)

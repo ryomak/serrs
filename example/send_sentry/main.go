@@ -54,7 +54,7 @@ func Do3() error {
 			err,
 			serrs.WithCode(serrs.StringCodeUnexpected),
 			serrs.WithMessage("do2 error"),
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"key": "value",
 			}),
 		)
@@ -68,7 +68,7 @@ func Do4() error {
 			err,
 			serrs.WithCode(serrs.StringCodeUnexpected),
 			serrs.WithMessage("Do4 error"),
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"userName": "hoge",
 			}),
 		)

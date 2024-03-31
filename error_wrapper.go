@@ -31,8 +31,8 @@ func (m messageWrapper) wrap(err *simpleError) {
 	_ = err.withMessage(m.message)
 }
 
-// WithCustomData returns an error wrapper that adds custom data to the error.
-func WithCustomData(data CustomData) errWrapper {
+// WithData returns an error wrapper that adds custom data to the error.
+func WithData(data CustomData) errWrapper {
 	return customDataWrapper{data: data}
 }
 

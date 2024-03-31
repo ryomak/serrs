@@ -14,7 +14,7 @@ func TestSerrs_Format(t *testing.T) {
 	err := serrs.Wrap(
 		e1,
 		serrs.WithCode(serrs.StringCode("demo")),
-		serrs.WithCustomData(serrs.DefaultCustomData{
+		serrs.WithData(serrs.DefaultCustomData{
 			"key1": "value1",
 			"key2": "value2",
 		}),
