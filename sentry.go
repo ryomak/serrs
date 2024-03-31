@@ -28,7 +28,7 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 	}
 	errCode, ok := GetErrorCode(err)
 	if !ok {
-		errCode = StringCodeUnexpected
+		errCode = StringCode("unknown")
 	}
 	event := sentry.NewEvent()
 	event.Level = sentry.LevelError

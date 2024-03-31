@@ -25,7 +25,7 @@ func Wrap(err error, ws ...errWrapper) error {
 	return e
 }
 
-// Is reports whether the error is the same as the target error.
+// Is reports whether the error's tree is the same as the target error.
 func Is(err error, target error) bool {
 	return errors.Is(err, target)
 }

@@ -14,7 +14,7 @@ func TestStringCode_ErrorCode(t *testing.T) {
 	}{
 		{
 			name: "unexpected",
-			s:    serrs.StringCodeUnexpected,
+			s:    serrs.StringCode("unexpected"),
 			want: "unexpected",
 		},
 	}

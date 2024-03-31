@@ -17,7 +17,7 @@ func TestStackedErrorJson(t *testing.T) {
 		{
 			name: "simpleError",
 			in: serrs.Wrap(
-				serrs.New(serrs.StringCodeUnexpected, "unexpected error"),
+				serrs.New(serrs.StringCode("unexpected"), "unexpected error"),
 				serrs.WithMessage("wrap error"),
 				serrs.WithData(serrs.DefaultCustomData{"key1": "value1"}),
 			),

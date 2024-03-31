@@ -11,7 +11,3 @@ type StringCode string
 func (s StringCode) ErrorCode() string {
 	return string(s)
 }
-
-const (
-	StringCodeUnexpected StringCode = "unexpected"
-)

@@ -8,6 +8,8 @@ import (
 	"github.com/ryomak/serrs"
 )
 
+const StringCodeUnexpected serrs.StringCode = "unexpected"
+
 func main() {
 
 	err := sentry.Init(sentry.ClientOptions{
@@ -52,7 +54,7 @@ func Do3() error {
 	if err := Do2(); err != nil {
 		return serrs.Wrap(
 			err,
-			serrs.WithCode(serrs.StringCodeUnexpected),
+			serrs.WithCode(StringCodeUnexpected),
 			serrs.WithMessage("do2 error"),
 			serrs.WithData(serrs.DefaultCustomData{
 				"key": "value",
@@ -66,7 +68,7 @@ func Do4() error {
 	if err := Do3(); err != nil {
 		return serrs.Wrap(
 			err,
-			serrs.WithCode(serrs.StringCodeUnexpected),
+			serrs.WithCode(StringCodeUnexpected),
 			serrs.WithMessage("Do4 error"),
 			serrs.WithData(serrs.DefaultCustomData{
 				"userName": "hoge",

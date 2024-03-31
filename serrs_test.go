@@ -63,52 +63,62 @@ func TestSimpleError_Is(t *testing.T) {
 		target error
 		want   bool
 	}{
-		"same error": {
+		"simpleError -> simpleError: same code": {
 			err:    serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
 			target: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
 			want:   true,
 		},
-		"diff error": {
+		"simpleError -> simpleError: other code": {
 			err:    serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
 			target: serrs.New(serrs.StringCode("fuga_error"), "fuga error"),
 			want:   false,
 		},
-		"wrap error": {
+		"wrap simpleError -> simpleError: same code": {
 			err:    serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
 			target: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
 			want:   true,
 		},
-		"wrap error: withCode match": {
+		"wrap simpleError -> simpleError : same code WithCode": {
 			err:    serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.StringCode("fuga_error"))),
 			target: serrs.New(serrs.StringCode("fuga_error"), "fuga error"),
 			want:   true,
 		},
-		"normal error": {
+		"normal error -> normal error": {
 			err:    errors.ErrUnsupported,
 			target: errors.ErrUnsupported,
 			want:   true,
 		},
-		"wrap normal error": {
+		"wrap normal error -> normal error": {
 			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
 			target: errors.ErrUnsupported,
 			want:   true,
 		},
-		"wrap normal error v2": {
+		"normal error -> wrap normal error": {
 			err:    errors.ErrUnsupported,
 			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
 			want:   false,
 		},
-		"wrap normal error: code mismatch": {
+		"wrap normal error -> other wrap normal error": {
 			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.StringCode("fuga_error"))),
 			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.StringCode("hoge_error"))),
 			want:   false,
 		},
-		"wrap normal error: code match": {
+		"wrap simpleError-> simpleError: same code": {
+			err:    serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.StringCode("fuga_error"))),
+			target: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			want:   true,
+		},
+		"simpleError -> wrap simpleError: same code": {
+			err:    serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			target: serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.StringCode("fuga_error"))),
+			want:   false,
+		},
+		"wrap normal error -> nil": {
 			err:    serrs.Wrap(errors.ErrUnsupported),
 			target: nil,
 			want:   false,
 		},
-		"wrap normal error: code match v2 ": {
+		"nil -> wrap normal error": {
 			err:    nil,
 			target: serrs.Wrap(errors.ErrUnsupported),
 			want:   false,

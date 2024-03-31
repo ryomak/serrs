@@ -69,6 +69,7 @@ func (s *simpleError) Is(target error) bool {
 			return targetCode.ErrorCode() == sCode.ErrorCode()
 		}
 	}
+
 	return false
 }
 
