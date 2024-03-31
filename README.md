@@ -70,6 +70,22 @@ if err := DoSomething(); err != nil {
 }
 ```
 
+### Get Additional Data
+- GetCustomData: Get custom data from error
+- GetErrorCode: Get error code from error
+- GetErrorCodeString: Get error code string from error
+- ErrorSurface: Get top level error message
+- Origin: Get original error
+
+## check error match
+```go
+var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
+
+if serrs.Is(HogeError) {
+    
+}
+```
+
 ## Send Sentry
 serrs supports sending errors to Sentry.
 ```go
@@ -106,14 +122,5 @@ func main() {
         event := serrs.GenerateSentryEvent(err)
         sentry.CaptureEvent(event)
     }
-}
-```
-
-## check error match
-```go
-var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
-
-if serrs.Is(HogeError) {
-    
 }
 ```
