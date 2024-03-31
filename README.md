@@ -9,7 +9,9 @@
 
 # description
 
-serrs is a package that provides a simple error handling mechanism.
+serrs is a library designed to simplify error handling in your applications.
+By using serrs, developers can effortlessly manage stack traces and integrate with monitoring tools like Sentry. 
+This library enables you to delegate the complex logic of error handling to serrs, maintaining code readability while also ensuring detailed tracking of errors.
 
 
 
