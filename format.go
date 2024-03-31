@@ -26,8 +26,8 @@ func (s *simpleError) printerFormat(p printer) error {
 		message += fmt.Sprintf("data: %v", s.data)
 	}
 
-	// print stack frame
-	s.frame.format(p)
+	// print stack frames
+	s.frames.format(p)
 
 	// print message
 	p.Print(message)
@@ -48,7 +48,7 @@ func formatError(f *simpleError, s fmt.State, verb rune) {
 
 	switch verb {
 
-	case 'v':
+	case 'v', 's':
 		if s.Flag('#') {
 			if stringer, ok := err.(fmt.GoStringer); ok {
 				_, _ = io.WriteString(&p.buf, stringer.GoString())
@@ -64,7 +64,6 @@ func formatError(f *simpleError, s fmt.State, verb rune) {
 			}
 		}
 
-	case 's':
 	case 'q', 'x', 'X':
 		direct = false
 

@@ -38,7 +38,7 @@ func main() {
 }
 
 func Do() error {
-	return serrs.New(serrs.StringCode("do_err"), "unexpected do error")
+	return serrs.New(serrs.DefaultCode("do_err"), "unexpected do error")
 }
 
 func Do2() error {
@@ -52,9 +52,8 @@ func Do3() error {
 	if err := Do2(); err != nil {
 		return serrs.Wrap(
 			err,
-			serrs.WithCode(serrs.StringCodeUnexpected),
 			serrs.WithMessage("do2 error"),
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"key": "value",
 			}),
 		)
@@ -66,9 +65,9 @@ func Do4() error {
 	if err := Do3(); err != nil {
 		return serrs.Wrap(
 			err,
-			serrs.WithCode(serrs.StringCodeUnexpected),
+			serrs.WithCode(serrs.DefaultCode("validation_error")),
 			serrs.WithMessage("Do4 error"),
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"userName": "hoge",
 			}),
 		)
