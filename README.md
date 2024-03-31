@@ -22,7 +22,7 @@ go get -u github.com/ryomak/serrs
 # Usage
 ## Create an error
 ```go
-var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
+var HogeError = serrs.New(serrs.StringCode("unexpected"),"unexpected error")
 ```
 
 or 
@@ -80,7 +80,7 @@ if err := DoSomething(); err != nil {
 
 ## check error match
 ```go
-var HogeError = serrs.New(serrs.StringCodeUnexpected,"unexpected error")
+var HogeError = serrs.New(serrs.StringCode("unexpected"),"unexpected error")
 
 if serrs.Is(HogeError) {
     
