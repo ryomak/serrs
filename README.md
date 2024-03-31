@@ -3,7 +3,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ryomak/serrs.svg)](https://pkg.go.dev/github.com/ryomak/serrs)
 [![GitHub Actions](https://github.com/ryomak/serrs/workflows/test/badge.svg)](https://github.com/ryomak/serrs/actions?query=workflows%3Atest)
-[![codecov](https://codecov.io/gh/ryomak/serrs/branch/master/graph/badge.svg)](https://codecov.io/gh/ryomak/serrs)
+[![codecov](https://codecov.io/gh/ryomak/serrs/branch/main/graph/badge.svg)](https://codecov.io/gh/ryomak/serrs)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ryomak/serrs)](https://goreportcard.com/report/github.com/ryomak/serrs)
 
 
