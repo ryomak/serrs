@@ -13,8 +13,6 @@ serrs is a library designed to simplify error handling in your applications.
 By using serrs, developers can effortlessly manage stack traces and integrate with monitoring tools like Sentry. 
 This library enables you to delegate the complex logic of error handling to serrs, maintaining code readability while also ensuring detailed tracking of errors.
 
-
-
 # Installation
 
 ```bash
@@ -55,13 +53,14 @@ fmt.Printf("%+v",err)
 ```
 
 ### Parameters
+The parameters that can be managed with serrs are three: `code`, `message`, and `data`.
 `WithXXX` functions can be used to add additional information to the error.
 - code: error code
 - message: err text
 - data: custom data
 
 **data**  
-data is a custom data that can be added to the error. The data is output to the log.  
+`data` is a custom data that can be added to the error. The data is output to the log.  
 If the type satisfies the CustomData interface, any type can be added.
 
 ```go
@@ -89,19 +88,25 @@ if serrs.Is(HogeError) {
 ```
 
 ## Send Sentry
-serrs supports sending errors to Sentry.
+supports sending reports to Sentry.
+The location where serrs.Wrap is executed is saved as a stack trace and displayed cleanly on Sentry. In addition, any added custom data or messages are also displayed as additional data on Sentry.
+
 ```go
 
 serrs.ReportSentry(
 	err,
+	// Customize the contexts
 	serrs.WithSentryContexts(map[string]sentry.Context{
 		"custom": map[string]any{
 			"key": "value",
 		},
 	}),
+    // Customize the Sentry tags
 	serrs.WithSentryTags(map[string]string{
 		"code": serrs.GetErrorCodeString(err),
 	}),
+	
+    // Customize the Sentry Level
 	serrs.WithSentryLevel(sentry.LevelInfo),
 )
 ```
