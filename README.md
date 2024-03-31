@@ -94,20 +94,19 @@ The location where serrs.Wrap is executed is saved as a stack trace and displaye
 ```go
 
 serrs.ReportSentry(
-	err,
-	// Customize the contexts
-	serrs.WithSentryContexts(map[string]sentry.Context{
-		"custom": map[string]any{
-			"key": "value",
-		},
-	}),
-    // Customize the Sentry tags
-	serrs.WithSentryTags(map[string]string{
-		"code": serrs.GetErrorCodeString(err),
-	}),
-	
-    // Customize the Sentry Level
-	serrs.WithSentryLevel(sentry.LevelInfo),
+    err, 
+    // Customize the contexts 
+    serrs.WithSentryContexts(map[string]sentry.Context{
+        "custom": map[string]any{
+            "key": "value",
+        },
+    }), 
+    // Customize the Sentry tags 
+    serrs.WithSentryTags(map[string]string{
+        "code": serrs.GetErrorCodeString(err),
+    }), 
+    // Customize the Sentry Level 
+    serrs.WithSentryLevel(sentry.LevelInfo),
 )
 ```
 
