@@ -21,7 +21,7 @@ func TestSerrs_Format(t *testing.T) {
 	)
 	err = serrs.Wrap(err, serrs.WithMessage("wrap error"))
 
-	checkMatch(t, fmt.Sprintf("%+v", err), `- file: .*serrs\/format_test.go:19
+	checkMatch(t, fmt.Sprintf("%+v", err), `- file: .*serrs\/format_test.go:22
   function: .*serrs_test.TestSerrs_Format
   msg: wrap error
 - file: .*format_test.go:14

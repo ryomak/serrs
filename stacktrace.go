@@ -1,20 +1,21 @@
 package serrs
 
 import (
-	pkgErrors "github.com/pkg/errors"
+	"fmt"
 )
 
 // StackTrace is a method to get the stack trace of the error for sentry-go
-func (s *simpleError) StackTrace() pkgErrors.StackTrace {
+func (s *simpleError) StackTrace() []uintptr {
 
-	f := make([]pkgErrors.Frame, 0, 30)
+	f := make([]uintptr, 0, 30)
 
-	if next := asSimpleError(s.cause); next != nil {
-		f = append(f, next.StackTrace()...)
+	if cause := asSimpleError(s.cause); cause != nil {
+		f = append(f, cause.StackTrace()...)
 	}
 
-	for _, v := range s.frame.frames {
-		f = append(f, pkgErrors.Frame(v))
+	for i, v := range s.frame.frames {
+		fmt.Println(i, v)
+		f = append(f, v)
 	}
 
 	return f

@@ -4,21 +4,20 @@ import (
 	"runtime"
 )
 
-// A Frame スタックフレームの情報を保持する構造体
+// A Frame represents a program counter inside a stack frame.
 type Frame struct {
 	// https://go.googlesource.com/go/+/032678e0fb/src/runtime/extern.go#169
 	frames [3]uintptr
 }
 
-// caller 呼び出し元情報のデータを返す。(メモリのアドレス/ファイル名/行番号など)
-// skipは呼び出し元の情報をスキップするスタックフレームの数。0は呼び出し元, 1は呼び出し元の呼び出し元が返却される
+// caller returns a Frame that describes a frame on the caller's stack.
 func caller(skip int) Frame {
 	var s Frame
 	runtime.Callers(skip+1, s.frames[:])
 	return s
 }
 
-// location frameから関数、ファイル、行を返す
+// location returns the function, file, and line number of a Frame.
 func (f Frame) location() (function, file string, line int) {
 	frames := runtime.CallersFrames(f.frames[:])
 	if _, ok := frames.Next(); !ok {

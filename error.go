@@ -10,7 +10,7 @@ var _ fmt.Formatter = (*simpleError)(nil)
 var _ fmt.Stringer = (*simpleError)(nil)
 var _ fmt.GoStringer = (*simpleError)(nil)
 
-// simpleError
+// simpleError is a simple implementation of the error interface.
 type simpleError struct {
 	// message is the error message
 	message string
@@ -29,7 +29,7 @@ type simpleError struct {
 	data CustomData
 }
 
-func create(msg string, skip int) *simpleError {
+func newSimpleError(msg string, skip int) *simpleError {
 	e := new(simpleError)
 	e.message = msg
 	e.frame = caller(skip + 1)

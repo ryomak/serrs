@@ -7,7 +7,7 @@ import (
 
 // New creates a new error with the given message and code.
 func New(code Code, msg string) error {
-	e := create(msg, 1).withCode(code)
+	e := newSimpleError(msg, 1).withCode(code)
 	return e
 }
 
@@ -17,7 +17,7 @@ func Wrap(err error, ws ...wrapper) error {
 	if err == nil {
 		return nil
 	}
-	e := create("", 1)
+	e := newSimpleError("", 1)
 	e.cause = err
 	for _, w := range ws {
 		w.wrap(e)
