@@ -1,6 +1,7 @@
 package serrs_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/ryomak/serrs"
@@ -8,7 +9,7 @@ import (
 
 func TestSerrs(t *testing.T) {
 
-	baseErr := serrs.New(serrs.StringCode("hoge_error"), "hoge error")
+	baseErr := serrs.New(serrs.DefaultCode("hoge_error"), "hoge error")
 	type want struct {
 		checkNil bool
 		code     serrs.Code
@@ -21,14 +22,14 @@ func TestSerrs(t *testing.T) {
 		"New": {
 			in: baseErr,
 			want: want{
-				code:  serrs.StringCode("hoge_error"),
+				code:  serrs.DefaultCode("hoge_error"),
 				error: "hoge error",
 			},
 		},
 		"Wrap": {
 			in: serrs.Wrap(baseErr, serrs.WithMessage("wrap error")),
 			want: want{
-				code:  serrs.StringCode("hoge_error"),
+				code:  serrs.DefaultCode("hoge_error"),
 				error: "wrap error: hoge error",
 			},
 		},
@@ -62,33 +63,71 @@ func TestSimpleError_Is(t *testing.T) {
 		target error
 		want   bool
 	}{
-		"same error": {
-			err:    serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
-			target: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+		"simpleError -> simpleError: same code": {
+			err:    serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
+			target: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 			want:   true,
 		},
-		"diff error": {
-			err:    serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
-			target: serrs.New(serrs.StringCode("fuga_error"), "fuga error"),
+		"simpleError -> simpleError: other code": {
+			err:    serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
+			target: serrs.New(serrs.DefaultCode("fuga_error"), "fuga error"),
 			want:   false,
 		},
-		"wrap error": {
-			err:    serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
-			target: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+		"wrap simpleError -> simpleError: same code": {
+			err:    serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
+			target: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 			want:   true,
 		},
-		"wrap error: withCode match": {
-			err:    serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.StringCode("fuga_error"))),
-			target: serrs.New(serrs.StringCode("fuga_error"), "fuga error"),
+		"wrap simpleError -> simpleError : same code WithCode": {
+			err:    serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.DefaultCode("fuga_error"))),
+			target: serrs.New(serrs.DefaultCode("fuga_error"), "fuga error"),
 			want:   true,
+		},
+		"normal error -> normal error": {
+			err:    errors.ErrUnsupported,
+			target: errors.ErrUnsupported,
+			want:   true,
+		},
+		"wrap normal error -> normal error": {
+			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
+			target: errors.ErrUnsupported,
+			want:   true,
+		},
+		"normal error -> wrap normal error": {
+			err:    errors.ErrUnsupported,
+			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
+			want:   false,
+		},
+		"wrap normal error -> other wrap normal error": {
+			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.DefaultCode("fuga_error"))),
+			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.DefaultCode("hoge_error"))),
+			want:   false,
+		},
+		"wrap simpleError-> simpleError: same code": {
+			err:    serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.DefaultCode("fuga_error"))),
+			target: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
+			want:   true,
+		},
+		"simpleError -> wrap simpleError: same code": {
+			err:    serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
+			target: serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithCode(serrs.DefaultCode("fuga_error"))),
+			want:   false,
+		},
+		"wrap normal error -> nil": {
+			err:    serrs.Wrap(errors.ErrUnsupported),
+			target: nil,
+			want:   false,
+		},
+		"nil -> wrap normal error": {
+			err:    nil,
+			target: serrs.Wrap(errors.ErrUnsupported),
+			want:   false,
 		},
 	}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			if serrs.Is(tt.err, tt.target) != tt.want {
-				t.Errorf("got %v, want %v", !tt.want, tt.want)
-			}
+			checkEqual(t, serrs.Is(tt.err, tt.target), tt.want)
 		})
 	}
 }
@@ -99,12 +138,12 @@ func TestOrigin(t *testing.T) {
 		want error
 	}{
 		"simple error": {
-			in:   serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
-			want: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			in:   serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
+			want: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 		},
 		"wrap error": {
-			in:   serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
-			want: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			in:   serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
+			want: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 		},
 		"nil error": {
 			in:   nil,
@@ -126,7 +165,7 @@ func TestWrap_WithCustomData(t *testing.T) {
 		want []serrs.CustomData
 	}{
 		"simple error": {
-			in: serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			in: serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 			data: serrs.DefaultCustomData{
 				"key": "value",
 			},
@@ -147,7 +186,7 @@ func TestWrap_WithCustomData(t *testing.T) {
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			checkEqual(t, serrs.GetCustomData(serrs.Wrap(tt.in, serrs.WithCustomData(tt.data))), tt.want)
+			checkEqual(t, serrs.GetCustomData(serrs.Wrap(tt.in, serrs.WithData(tt.data))), tt.want)
 		})
 	}
 }
@@ -155,13 +194,13 @@ func TestWrap_WithCustomData(t *testing.T) {
 func TestGetCustomData_Example(t *testing.T) {
 	var in error
 	if err := func() error {
-		return serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithCustomData(serrs.DefaultCustomData{
+		return serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithData(serrs.DefaultCustomData{
 			"key": "value",
 		}))
 	}(); err != nil {
 		in = serrs.Wrap(
 			err,
-			serrs.WithCustomData(serrs.DefaultCustomData{
+			serrs.WithData(serrs.DefaultCustomData{
 				"key2": "value2",
 			}),
 		)
@@ -183,15 +222,15 @@ func TestErrorSurface(t *testing.T) {
 		want string
 	}{
 		"simple error": {
-			in:   serrs.New(serrs.StringCode("hoge_error"), "hoge error"),
+			in:   serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"),
 			want: "hoge error",
 		},
 		"wrap error": {
-			in:   serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
+			in:   serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error"), serrs.WithMessage("wrap error")),
 			want: "wrap error",
 		},
 		"wrap error without msg": {
-			in:   serrs.Wrap(serrs.New(serrs.StringCode("hoge_error"), "hoge error")),
+			in:   serrs.Wrap(serrs.New(serrs.DefaultCode("hoge_error"), "hoge error")),
 			want: "hoge error",
 		},
 		"nil error": {

@@ -13,8 +13,8 @@ func TestSerrs_Format(t *testing.T) {
 	e1 := errors.New("error1")
 	err := serrs.Wrap(
 		e1,
-		serrs.WithCode(serrs.StringCode("demo")),
-		serrs.WithCustomData(serrs.DefaultCustomData{
+		serrs.WithCode(serrs.DefaultCode("demo")),
+		serrs.WithData(serrs.DefaultCustomData{
 			"key1": "value1",
 			"key2": "value2",
 		}),
@@ -32,5 +32,9 @@ func TestSerrs_Format(t *testing.T) {
 
 	checkEqual(t, fmt.Sprintf("%v", err), "wrap error: error1")
 	checkEqual(t, fmt.Sprintf("%#v", err), "wrap error: error1")
+	checkEqual(t, fmt.Sprintf("%s", err), "wrap error: error1")
 
+	// unexpected format
+	//nolint
+	checkEqual(t, fmt.Sprintf("%a", err), "%!a(*serrs.simpleError)")
 }

@@ -1,9 +1,21 @@
 package serrs
 
-var stackedErrorJsonFormatter = func(msg string, data CustomData) any {
+var stackedErrorJsonFormatter = func(err error) any {
+	if err == nil {
+		return defaultErrorJson{}
+	}
+
+	e := asSimpleError(err)
+	if e == nil {
+		return defaultErrorJson{
+			Message: err.Error(),
+			Data:    nil,
+		}
+	}
+
 	return defaultErrorJson{
-		Message: msg,
-		Data:    data,
+		Message: e.message,
+		Data:    e.data,
 	}
 }
 
@@ -22,7 +34,7 @@ func StackedErrorJson(err error) []any {
 
 	se := asSimpleError(err)
 	if se == nil {
-		return append(m, stackedErrorJsonFormatter(err.Error(), nil))
+		return append(m, stackedErrorJsonFormatter(err))
 	}
 	if causeErr := asSimpleError(se.cause); causeErr != nil {
 		m = append(m, StackedErrorJson(causeErr)...)
@@ -32,10 +44,10 @@ func StackedErrorJson(err error) []any {
 	if se.message == "" && se.data == nil {
 		return m
 	}
-	return append(m, stackedErrorJsonFormatter(se.message, se.data))
+	return append(m, stackedErrorJsonFormatter(se))
 }
 
-type StackedErrorJsonFormatter func(msg string, data CustomData) any
+type StackedErrorJsonFormatter func(err error) any
 
 type defaultErrorJson struct {
 	Message string     `json:"message"`

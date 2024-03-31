@@ -1,24 +1,22 @@
 package serrs
 
 import (
+	"context"
+
 	sentry "github.com/getsentry/sentry-go"
-	pkgErrors "github.com/pkg/errors"
 )
 
 // StackTrace is a method to get the stack trace of the error for sentry-go
 // https://github.com/getsentry/sentry-go/blob/master/stacktrace.go#L84-L87
-func (s *simpleError) StackTrace() pkgErrors.StackTrace {
-
-	f := make([]pkgErrors.Frame, 0, 30)
-
-	if next := asSimpleError(s.cause); next != nil {
-		f = append(f, next.StackTrace()...)
+func (s *simpleError) StackTrace() []uintptr {
+	origin := originSimpleError(s)
+	if origin == nil {
+		return []uintptr{}
 	}
-
-	// frames 0: newSimpleError() frames 1: frame0+1
-	f = append(f, pkgErrors.Frame(s.frame.frames[1]))
-
-	return f
+	if len(origin.frames) <= 1 {
+		return origin.frames
+	}
+	return origin.frames[1:]
 }
 
 // GenerateSentryEvent is a method to generate a sentry event from an error
@@ -28,7 +26,7 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 	}
 	errCode, ok := GetErrorCode(err)
 	if !ok {
-		errCode = StringCodeUnexpected
+		errCode = DefaultCode("unknown")
 	}
 	event := sentry.NewEvent()
 	event.Level = sentry.LevelError
@@ -55,6 +53,17 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 func ReportSentry(err error, ws ...sentryWrapper) {
 	event := GenerateSentryEvent(err, ws...)
 	sentry.CaptureEvent(event)
+}
+
+// ReportSentryWithContext is a method to report an error to sentry with a context
+func ReportSentryWithContext(ctx context.Context, err error, ws ...sentryWrapper) {
+	hub := sentry.GetHubFromContext(ctx)
+	if hub == nil {
+		ReportSentry(err, ws...)
+		return
+	}
+	event := GenerateSentryEvent(err, ws...)
+	hub.CaptureEvent(event)
 }
 
 type sentryWrapper interface {
@@ -108,4 +117,17 @@ func (s sentryEventLevelWrapper) wrap(event *sentry.Event) *sentry.Event {
 	event.Level = s.l
 
 	return event
+}
+
+func originSimpleError(err error) *simpleError {
+	var e *simpleError
+	for {
+		if err == nil {
+			return e
+		}
+		if ee := asSimpleError(err); ee != nil {
+			e = ee
+		}
+		err = Unwrap(err)
+	}
 }

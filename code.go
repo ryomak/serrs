@@ -5,13 +5,9 @@ type Code interface {
 	ErrorCode() string
 }
 
-// StringCode is a type that represents an error code as a string.
-type StringCode string
+// DefaultCode is a type that represents an error code as a string.
+type DefaultCode string
 
-func (s StringCode) ErrorCode() string {
+func (s DefaultCode) ErrorCode() string {
 	return string(s)
 }
-
-const (
-	StringCodeUnexpected StringCode = "unexpected"
-)

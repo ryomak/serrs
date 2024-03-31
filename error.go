@@ -22,8 +22,8 @@ type simpleError struct {
 	// cause is the cause of the error
 	cause error
 
-	// frame is the location where the error occurred
-	frame Frame
+	// frames is the location where the error occurred
+	frames Frames
 
 	// data is the custom data attached to the error
 	data CustomData
@@ -32,7 +32,7 @@ type simpleError struct {
 func newSimpleError(msg string, skip int) *simpleError {
 	e := new(simpleError)
 	e.message = msg
-	e.frame = caller(skip + 1)
+	e.frames = caller(skip + 1)
 	return e
 }
 
@@ -63,9 +63,14 @@ func (s *simpleError) Error() string {
 
 func (s *simpleError) Is(target error) bool {
 	if targetErr := asSimpleError(target); targetErr != nil {
-		return targetErr.getCode() == s.getCode()
+		targetCode := targetErr.getCode()
+		sCode := s.getCode()
+		if targetCode != nil && sCode != nil {
+			return targetCode.ErrorCode() == sCode.ErrorCode()
+		}
 	}
-	return s == target
+
+	return false
 }
 
 func (s *simpleError) Unwrap() error {
