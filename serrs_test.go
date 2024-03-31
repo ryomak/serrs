@@ -93,13 +93,31 @@ func TestSimpleError_Is(t *testing.T) {
 			target: errors.ErrUnsupported,
 			want:   true,
 		},
+		"wrap normal error v2": {
+			err:    errors.ErrUnsupported,
+			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithMessage("wrap error")),
+			want:   false,
+		},
+		"wrap normal error: code mismatch": {
+			err:    serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.StringCode("fuga_error"))),
+			target: serrs.Wrap(errors.ErrUnsupported, serrs.WithCode(serrs.StringCode("hoge_error"))),
+			want:   false,
+		},
+		"wrap normal error: code match": {
+			err:    serrs.Wrap(errors.ErrUnsupported),
+			target: nil,
+			want:   false,
+		},
+		"wrap normal error: code match v2 ": {
+			err:    nil,
+			target: serrs.Wrap(errors.ErrUnsupported),
+			want:   false,
+		},
 	}
 
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			if serrs.Is(tt.err, tt.target) != tt.want {
-				t.Errorf("got %v, want %v", !tt.want, tt.want)
-			}
+			checkEqual(t, serrs.Is(tt.err, tt.target), tt.want)
 		})
 	}
 }

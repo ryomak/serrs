@@ -63,9 +63,13 @@ func (s *simpleError) Error() string {
 
 func (s *simpleError) Is(target error) bool {
 	if targetErr := asSimpleError(target); targetErr != nil {
-		return targetErr.getCode() == s.getCode()
+		targetCode := targetErr.getCode()
+		sCode := s.getCode()
+		if targetCode != nil && sCode != nil {
+			return targetCode.ErrorCode() == sCode.ErrorCode()
+		}
 	}
-	return s == target
+	return false
 }
 
 func (s *simpleError) Unwrap() error {
