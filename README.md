@@ -36,10 +36,10 @@ if err := DoSomething(); err != nil {
 
 fmt.Printf("%+v",err)
 
-// Output:
+// Output Example:
 // - file: ./serrs/format_test.go:22
 //   function: github.com/ryomak/serrs_test.TestSerrs_Format
-//   msg: wrap error
+//   msg: 
 // - file: ./serrs/format_test.go:14
 //   function: github.com/ryomak/serrs_test.TestSerrs_Format
 //   code: demo
@@ -47,9 +47,16 @@ fmt.Printf("%+v",err)
 // - error1
 ```
 
-## SendSentry
+### Parameters
+WithXXX functions can be used to add additional information to the error.
+- code: error code
+- message: err text
+- data: custom data 
+
+## Send Sentry
 serrs supports sending errors to Sentry.
 ```go
+
 serrs.ReportSentry(
 	err,
 	serrs.WithSentryContexts(map[string]sentry.Context{
@@ -67,6 +74,20 @@ serrs.ReportSentry(
 or 
 
 ```go
-event := serrs.GenerateSentryEvent(err)
-sentry.CaptureEvent(event)
+
+import (
+    "github.com/getsentry/sentry-go"
+)
+
+func main() {
+    sentry.Init(sentry.ClientOptions{
+        Dsn: "your-dsn",
+    })
+    defer sentry.Flush(2 * time.Second)
+	
+    if err := DoSomething(); err != nil {
+        event := serrs.GenerateSentryEvent(err)
+        sentry.CaptureEvent(event)
+    }
+}
 ```

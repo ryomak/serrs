@@ -12,8 +12,8 @@ func New(code Code, msg string) error {
 }
 
 // Wrap returns an error with a stack trace.
-// wrapper is a function that adds information to the error.
-func Wrap(err error, ws ...wrapper) error {
+// errWrapper is a function that adds information to the error.
+func Wrap(err error, ws ...errWrapper) error {
 	if err == nil {
 		return nil
 	}
