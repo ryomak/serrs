@@ -32,5 +32,9 @@ func TestSerrs_Format(t *testing.T) {
 
 	checkEqual(t, fmt.Sprintf("%v", err), "wrap error: error1")
 	checkEqual(t, fmt.Sprintf("%#v", err), "wrap error: error1")
+	checkEqual(t, fmt.Sprintf("%s", err), "wrap error: error1")
 
+	// unexpected format
+	//nolint
+	checkEqual(t, fmt.Sprintf("%a", err), "%!a(*serrs.simpleError)")
 }

@@ -1,6 +1,8 @@
 package serrs
 
 import (
+	"context"
+
 	sentry "github.com/getsentry/sentry-go"
 )
 
@@ -54,6 +56,16 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 func ReportSentry(err error, ws ...sentryWrapper) {
 	event := GenerateSentryEvent(err, ws...)
 	sentry.CaptureEvent(event)
+}
+
+func ReportSentryWithContext(ctx context.Context, err error, ws ...sentryWrapper) {
+	hub := sentry.GetHubFromContext(ctx)
+	if hub == nil {
+		ReportSentry(err, ws...)
+		return
+	}
+	event := GenerateSentryEvent(err, ws...)
+	hub.CaptureEvent(event)
 }
 
 type sentryWrapper interface {
