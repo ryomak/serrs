@@ -2,23 +2,25 @@ package serrs
 
 import (
 	sentry "github.com/getsentry/sentry-go"
-	pkgErrors "github.com/pkg/errors"
 )
 
 // StackTrace is a method to get the stack trace of the error for sentry-go
 // https://github.com/getsentry/sentry-go/blob/master/stacktrace.go#L84-L87
-func (s *simpleError) StackTrace() pkgErrors.StackTrace {
+func (s *simpleError) StackTrace() []uintptr {
 
-	f := make([]pkgErrors.Frame, 0, 30)
-
-	if next := asSimpleError(s.cause); next != nil {
-		f = append(f, next.StackTrace()...)
+	frames := make([]uintptr, 0, 30)
+	origin := originSimpleError(s)
+	if origin == nil {
+		return frames
+	}
+	for _, frame := range origin.frame.frames {
+		frames = append(frames, frame)
+	}
+	if len(frames) > 0 {
+		frames = frames[1:]
 	}
 
-	// frames 0: newSimpleError() frames 1: frame0+1
-	f = append(f, pkgErrors.Frame(s.frame.frames[1]))
-
-	return f
+	return frames
 }
 
 // GenerateSentryEvent is a method to generate a sentry event from an error
@@ -108,4 +110,17 @@ func (s sentryEventLevelWrapper) wrap(event *sentry.Event) *sentry.Event {
 	event.Level = s.l
 
 	return event
+}
+
+func originSimpleError(err error) *simpleError {
+	var e *simpleError
+	for {
+		if err == nil {
+			return e
+		}
+		if ee := asSimpleError(err); ee != nil {
+			e = ee
+		}
+		err = Unwrap(err)
+	}
 }
