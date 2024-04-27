@@ -16,7 +16,7 @@ func (s *simpleError) StackTrace() []uintptr {
 	for _, frame := range origin.frame.frames {
 		frames = append(frames, frame)
 	}
-	if len(frames) > 0 {
+	if len(frames) > 1 {
 		frames = frames[1:]
 	}
 
