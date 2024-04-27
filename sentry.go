@@ -13,14 +13,11 @@ func (s *simpleError) StackTrace() []uintptr {
 	if origin == nil {
 		return frames
 	}
-	for _, frame := range origin.frame.frames {
-		frames = append(frames, frame)
+	frames = append(frames, origin.frame.frames...)
+	if len(frames) <= 1 {
+		return frames
 	}
-	if len(frames) > 1 {
-		frames = frames[1:]
-	}
-
-	return frames
+	return frames[1:]
 }
 
 // GenerateSentryEvent is a method to generate a sentry event from an error
