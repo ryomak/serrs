@@ -2,6 +2,7 @@ package serrs
 
 import (
 	"context"
+	"fmt"
 
 	sentry "github.com/getsentry/sentry-go"
 )
@@ -24,15 +25,19 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 	if err == nil {
 		return nil
 	}
+	exceptionType := Origin(err).Error()
 	errCode, ok := GetErrorCode(err)
 	if !ok {
 		errCode = DefaultCode("unknown")
+	} else {
+		exceptionType = fmt.Sprintf("[%s]%s", errCode, exceptionType)
 	}
+
 	event := sentry.NewEvent()
 	event.Level = sentry.LevelError
 	event.Exception = []sentry.Exception{{
 		Value:      err.Error(),
-		Type:       Origin(err).Error(),
+		Type:       exceptionType,
 		Stacktrace: sentry.ExtractStacktrace(err),
 	}}
 	event.Contexts = map[string]sentry.Context{
