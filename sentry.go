@@ -30,7 +30,7 @@ func GenerateSentryEvent(err error, ws ...sentryWrapper) *sentry.Event {
 	if !ok {
 		errCode = DefaultCode("unknown")
 	} else {
-		exceptionType = fmt.Sprintf("[%s]%s", errCode, exceptionType)
+		exceptionType = fmt.Sprintf("[%s] %s", errCode, exceptionType)
 	}
 
 	event := sentry.NewEvent()
