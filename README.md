@@ -11,7 +11,6 @@
 
 serrs is a library designed to simplify error handling in your applications.
 By using serrs, developers can effortlessly manage stack traces and integrate with monitoring tools like Sentry. 
-This library enables you to delegate the complex logic of error handling to serrs, maintaining code readability while also ensuring detailed tracking of errors.
 
 # Installation
 
@@ -22,7 +21,8 @@ go get -u github.com/ryomak/serrs
 # Usage
 ## Create an error
 ```go
-var HogeError = serrs.New(serrs.DefaultCode("unexpected"),"unexpected error")
+
+var HogeError = serrs.Wrap(err)
 ```
 
 or 
@@ -71,12 +71,12 @@ if err := DoSomething(); err != nil {
 }
 ```
 
-### Get Additional Data
-- GetCustomData: Get custom data from error
-- GetErrorCode: Get error code from error
-- GetErrorCodeString: Get error code string from error
-- ErrorSurface: Get top level error message
-- Origin: Get original error
+### Get Additional Data Functions
+- GetCustomData(err error): Get custom data from error
+- GetErrorCode(err error): Get error code from error
+- GetErrorCodeString(err error): Get error code string from error
+- ErrorSurface(err error): Get top level error message
+- Origin(err error): Get original error
 
 ## check error match
 ```go
